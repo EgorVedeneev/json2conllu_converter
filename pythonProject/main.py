@@ -16,7 +16,7 @@ ru = 'ru_core_news_lg'
 load_spacy(ru)
 nlp = init_parser(ru, 'spacy')
 now = datetime.now().time().strftime('%H-%M-%S')
-jsonFile = open(f'json2conllu{now}.txt', 'w')
+jsonFile = open(f'json2conllu{now}.txt', 'w', encoding='utf-8')
 
 def readText(json_file: str):
     file = open(json_file, encoding='utf-8')
@@ -52,7 +52,7 @@ for file in list:
     if file.endswith('.json'):
         readText(file)
     else:
-        print('\nnot json file')
+        print('not json file')
 
 jsonFile.close()
 pre, ext = os.path.splitext(jsonFile.name)
