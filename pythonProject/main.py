@@ -21,16 +21,16 @@ jsonFile = open(f'json2conllu{now}.txt', 'w', encoding='utf-8')
 def readText(json_file: str):
     file = open(json_file, encoding='utf-8')
     loaded_json = json.load(file)
+    pretty_json = json.dumps(loaded_json)
     total_count = len(loaded_json)
-    current_count = 0
+    current_id = 1
     print(f'{total_count} elements in document')
     for element in loaded_json:
-        progressBar('Progress', current_count, total_count)
-        id = element['id']
-        text = element['data']['text'].strip()
+        progressBar('Progress', current_id, total_count)
+        text = element["data"]["text"].strip()
         doc = nlp(text)
-        jsonFile.write(f'# sent_id = {id}\n# text = {text}\n{doc._.conll_str}\n')
-        current_count += 1
+        jsonFile.write(f'# sent_id = {current_id}\n# text = {text}\n{doc._.conll_str}\n')
+        current_id += 1
 
 def progressBar(name, value, endvalue, bar_length=50, width=20):
     percent = float(value) / endvalue
@@ -52,7 +52,7 @@ for file in list:
     if file.endswith('.json'):
         readText(file)
     else:
-        print('not json file')
+        print('\nnot json file')
 
 jsonFile.close()
 pre, ext = os.path.splitext(jsonFile.name)
