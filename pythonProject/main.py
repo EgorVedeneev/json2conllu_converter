@@ -15,8 +15,10 @@ ru = 'ru_core_news_lg'
 
 load_spacy(ru)
 nlp = init_parser(ru, 'spacy')
-now = datetime.now().time().strftime('%H-%M-%S')
-jsonFile = open(f'json2conllu{now}.txt', 'w', encoding='utf-8')
+current_time = datetime.now().time().strftime('_%H-%M-%S')
+current_date = datetime.now().strftime('_%Y-%m-%d')
+
+jsonFile = open(f'json2conllu{current_date + current_time}.txt', 'w', encoding='utf-8')
 
 def readText(json_file: str):
     file = open(json_file, encoding='utf-8')
@@ -40,7 +42,7 @@ def progressBar(name, value, endvalue, bar_length=50, width=20):
         name, width, arrow + spaces, int(round(percent * 100))))
     sys.stdout.flush()
     if value == endvalue:
-        sys.stdout.write('\n\n')
+        sys.stdout.write('\n')
 
 # Get Current Directory
 currentDirectory = os.getcwd()
@@ -52,7 +54,7 @@ for file in list:
     if file.endswith('.json'):
         readText(file)
     else:
-        print('\nnot json file')
+        print('not json file')
 
 jsonFile.close()
 pre, ext = os.path.splitext(jsonFile.name)
