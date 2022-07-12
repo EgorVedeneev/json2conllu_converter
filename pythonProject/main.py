@@ -10,6 +10,7 @@ import spacy_conll
 from spacy_download import load_spacy
 from datetime import datetime
 from spacy_conll import init_parser
+import csv
 
 ru = 'ru_core_news_lg'
 
@@ -18,7 +19,7 @@ nlp = init_parser(ru, 'spacy')
 current_time = datetime.now().time().strftime('_%H-%M-%S')
 current_date = datetime.now().strftime('_%Y-%m-%d')
 
-jsonFile = open(f'json2conllu{current_date + current_time}.txt', 'w', encoding='utf-8')
+opened_file = open(f'csv2conllu{current_date + current_time}.txt', 'w', encoding='utf-8')
 
 def readText(json_file: str):
     file = open(json_file, encoding='utf-8')
@@ -31,8 +32,21 @@ def readText(json_file: str):
         progressBar('Progress', current_id, total_count)
         text = element["data"]["text"].strip()
         doc = nlp(text)
-        jsonFile.write(f'# sent_id = {current_id}\n# text = {text}\n{doc._.conll_str}\n')
+        opened_file.write(f'# sent_id = {current_id}\n# text = {text}\n{doc._.conll_str}\n')
         current_id += 1
+
+def readTextFromCSV(csv_file: any):
+    reader = csv.reader(csv_file)
+    data = list(reader)
+    total_count = len(data)
+    current_id = 1
+    for row in data:
+        progressBar('Progress', current_id, total_count)
+        text = row[0]
+        doc = nlp(text)
+        opened_file.write(f'# sent_id = {current_id}\n# text = {text}\n{doc._.conll_str}\n')
+        current_id += 1
+
 
 def progressBar(name, value, endvalue, bar_length=50, width=20):
     percent = float(value) / endvalue
@@ -49,14 +63,27 @@ currentDirectory = os.getcwd()
 print('Current Directory:', currentDirectory)
 
 # Find .json files and convert
-list = os.listdir(currentDirectory + '/')
-for file in list:
-    if file.endswith('.json'):
-        readText(file)
-    else:
-        print('not json file')
+listDIR = os.listdir(currentDirectory + '/')
+for file in listDIR:
+    if file.endswith('.csv'):
+        with open(f'{file}') as file:
+            readTextFromCSV(file)
+            # reader = csv.reader(file)
+            # data = list(reader)
+            # total_count = len(data)
+            # current_id = 1
+            # print(total_count)
+            # for row in data:
+            #     progressBar('Progress', current_id, total_count)
+            #     text = row[0]
+            #     doc = nlp(text)
+            #     opened_file.write(f'# sent_id = {current_id}\n# text = {text}\n{doc._.conll_str}\n')
+            #     current_id += 1
 
-jsonFile.close()
-pre, ext = os.path.splitext(jsonFile.name)
-os.rename(jsonFile.name, pre + '.conllu')
+    else:
+        print('not csv file')
+
+opened_file.close()
+pre, ext = os.path.splitext(opened_file.name)
+os.rename(opened_file.name, pre + '.conllu')
 sys.exit()
